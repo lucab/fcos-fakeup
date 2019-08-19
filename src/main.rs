@@ -11,7 +11,7 @@ mod scraper;
 use actix::prelude::*;
 use actix_web::{http::Method, middleware::Logger, server, App};
 use actix_web::{HttpRequest, HttpResponse};
-use failure::{Error, Fallible, format_err};
+use failure::{format_err, Error, Fallible};
 use futures::future;
 use futures::prelude::*;
 use serde_derive::{Deserialize, Serialize};
@@ -93,9 +93,16 @@ pub(crate) fn serve_graph(
     // Assemble graph and return it as JSON.
     let resp = cached_latest
         .and_then(|latest| {
-            let graph = Graph {
-                nodes: vec![current, latest],
-                edges: vec![(0, 1)],
+            let graph = if current.payload != latest.payload {
+                Graph {
+                    nodes: vec![current, latest],
+                    edges: vec![(0, 1)],
+                }
+            } else {
+                Graph {
+                    nodes: vec![latest],
+                    edges: vec![],
+                }
             };
             Ok(graph)
         })

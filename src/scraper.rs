@@ -139,10 +139,7 @@ pub(crate) struct GetLatest {
 
 impl GetLatest {
     pub fn new(basearch: String, stream: String) -> Self {
-        Self {
-            basearch,
-            stream,
-        }
+        Self { basearch, stream }
     }
 }
 
